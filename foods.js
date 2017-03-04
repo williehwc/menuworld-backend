@@ -173,13 +173,14 @@ module.exports = function (app, mongo, autoIncrement) {
         userID: req.userID
       }}
     }, function(err, result) {
-      if (result.modifiedCount == 1) {
-        if (req.method == 'DELETE')
+      if (req.method == 'DELETE') {
+        if (result.modifiedCount == 1) {
           res.sendStatus(200);
-        else
-          next();
+        } else {
+          res.sendStatus(403);
+        }
       } else {
-        res.sendStatus(403);
+        next();
       }
     });
   });

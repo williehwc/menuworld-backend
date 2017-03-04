@@ -53,8 +53,8 @@ module.exports = function (app, mongo, autoIncrement, sha1, generateToken) {
   
   // Get user's private info (email, menus, recently-viewed foods)
   app.get('/users/:uid/private', function (req, res, next) {
-    // Check if either admin or user ID matches that on token
-    if (!req.admin && req.userID != parseInt(req.params.uid))
+    // Check if user ID matches that on token
+    if (req.userID != parseInt(req.params.uid))
       return res.sendStatus(401);
     // Get recently-viewed foods
     req.viewed = [];

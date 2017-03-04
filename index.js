@@ -18,6 +18,9 @@ mongo.connectToServer(function(err) {
 // MongoDB auto-increment
 var autoIncrement = require("mongodb-autoincrement");
 
+// Array intersect
+var intersect = require('intersect');
+
 // SHA1
 var sha1 = require('sha1');
 
@@ -34,7 +37,7 @@ var generateToken = function (userID) {
   var date = new Date();
   var payload = {
     userID: userID,
-    exp: date.setHours(date.getHours() + 24)
+    exp: date.setHours(date.getHours() + 17532)
   };
   return jwt.encode(payload, secret);
 };
@@ -81,6 +84,74 @@ require('./menus.js')(app, mongo, autoIncrement);
 
 // Menus endpoints
 require('./foods.js')(app, mongo, autoIncrement);
+
+// Top searches
+app.get('/top', function (req, res) {
+  mongo.getDB().collection('searches').find().sort({count:-1}).limit(5).toArray(function(err, docs) {
+    var searches = [];
+    for (var i = 0; i < docs.length; i++) {
+      searches.push(docs[i].keyword);
+    }
+    res.json({
+      searches: searches
+    });
+  });
+});
+
+// Search
+app.get(['/search/:keyword/:allergies', '/search/:keyword'], function (req, res, next) {
+  var keyword = req.params.keyword.replace('+', ' ');
+  // Create index (see https://code.tutsplus.com/tutorials/full-text-search-in-mongodb--cms-24835)
+  mongo.getDB().collection('foods').createIndex({'foodName': 'text'}, null, function(err, indexName) {
+    // Add to list of searches
+    mongo.getDB().collection('searches').count({
+      keyword: keyword
+    }, function(err, count) {
+      if (count > 0) {
+        // Increment count
+        mongo.getDB().collection('searches').updateOne({
+          keyword: keyword
+        }, {
+          $inc: {count: 1}
+        }, function(err, result) {
+          next();
+        });
+      } else {
+        // Insert count
+        autoIncrement.getNextSequence(mongo.getDB(), 'searches', function (err, autoIndex) {
+          mongo.getDB().collection('searches').insertOne({
+            _id: autoIndex,
+            keyword: keyword,
+            count: 1
+          }, function(err, result) {
+            next();
+          });
+        });
+      }
+    });
+  });
+});
+
+app.get(['/search/:keyword/:allergies', '/search/:keyword'], function (req, res) {
+  var keyword = req.params.keyword.replace('+', ' ');
+  // Assume each word is an allergy
+  var allergies = null;
+  if (req.params.allergies) {
+    allergies = req.params.allergies.split('+');
+  }
+  // Perform search
+  mongo.getDB().collection('foods').find({$text: {$search: keyword}}, {score: {$meta: 'textScore'}}).sort({score: {$meta: 'textScore'}}).toArray(function(err, docs) {
+    var foods = [];
+    for (var i = 0; i < docs.length; i++) {
+      if (!allergies || intersect(docs[i].allergens, allergies).length > 0) {
+        foods.push(docs[i]._id);
+      }
+    }
+    res.json({
+      foods: foods
+    });
+  });
+});
 
 // Popular (most-liked) foods
 app.get('/popular', function (req, res) {
