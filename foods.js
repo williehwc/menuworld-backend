@@ -1,4 +1,4 @@
-module.exports = function (app, mongo, autoIncrement) {
+module.exports = function (app, mongo, autoIncrement, parseFood) {
 
   // Add food to menu
   app.post('/foods', function (req, res) {
@@ -65,39 +65,11 @@ module.exports = function (app, mongo, autoIncrement) {
     mongo.getDB().collection('foods').find({
       _id: parseInt(req.params.fid)
     }).toArray(function(err, docs) {
+      if (docs.length == 0)
+        return res.sendStatus(403);
       var food = docs[0];
-      // PUT TOGETHER AR
-      var ar = [];
-      // Go through declared allergens
-      for (var i = 0; i < food.allergens.length; i++) {
-        ar.push({
-          allergen: food.allergens[i],
-          confirms: [],
-          denys: []
-        });
-      }
-      // Go through allergen reports
-      for (var i = 0; i < food.allergenReports.length; i++) {
-        for (var j = 0; j < ar.length; j++) {
-          if (food.allergenReports[i].allergen == ar[i].allergen) {
-            if (food.allergenReports[i].confirm) {
-              ar[i].confirms.push(food.allergenReports[i].userID);
-            } else {
-              ar[i].denys.push(food.allergenReports[i].userID);
-            }
-          }
-        }
-      }
       // Send JSON
-      res.json({
-        foodName: food.foodName,
-        menuID: food.menuID,
-        photo: food.photo,
-        likes: food.likeUserIDs,
-        mealType: food.mealType,
-        cuisine: food.cuisine,
-        allergens: ar
-      });
+      res.json(parseFood(food));
     });
   });
   

@@ -42,6 +42,42 @@ var generateToken = function (userID) {
   return jwt.encode(payload, secret);
 };
 
+// Function for parsing food JSON
+var parseFood = function (food) {
+  // PUT TOGETHER AR
+  var ar = [];
+  // Go through declared allergens
+  for (var i = 0; i < food.allergens.length; i++) {
+    ar.push({
+      allergen: food.allergens[i],
+      confirms: [],
+      denys: []
+    });
+  }
+  // Go through allergen reports
+  for (var i = 0; i < food.allergenReports.length; i++) {
+    for (var j = 0; j < ar.length; j++) {
+      if (food.allergenReports[i].allergen == ar[i].allergen) {
+        if (food.allergenReports[i].confirm) {
+          ar[i].confirms.push(food.allergenReports[i].userID);
+        } else {
+          ar[i].denys.push(food.allergenReports[i].userID);
+        }
+      }
+    }
+  }
+  return {
+    foodID: food._id,
+    foodName: food.foodName,
+    menuID: food.menuID,
+    photo: food.photo,
+    likes: food.likeUserIDs,
+    mealType: food.mealType,
+    cuisine: food.cuisine,
+    allergens: ar
+  };
+};
+
 // Parse JSON and make sure that it's not empty
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
@@ -77,13 +113,13 @@ app.all('*', jsonParser, function (req, res, next) {
 });
 
 // Users endpoints
-require('./users.js')(app, mongo, autoIncrement, sha1, generateToken);
+require('./users.js')(app, mongo, autoIncrement, sha1, generateToken, parseFood);
 
 // Menus endpoints
-require('./menus.js')(app, mongo, autoIncrement);
+require('./menus.js')(app, mongo, autoIncrement, parseFood);
 
-// Menus endpoints
-require('./foods.js')(app, mongo, autoIncrement);
+// Foods endpoints
+require('./foods.js')(app, mongo, autoIncrement, parseFood);
 
 // Top searches
 app.get('/top', function (req, res) {
@@ -144,7 +180,7 @@ app.get(['/search/:keyword/:allergies', '/search/:keyword'], function (req, res)
     var foods = [];
     for (var i = 0; i < docs.length; i++) {
       if (!allergies || intersect(docs[i].allergens, allergies).length > 0) {
-        foods.push(docs[i]._id);
+        foods.push(parseFood(docs[i]));
       }
     }
     res.json({
@@ -158,7 +194,7 @@ app.get('/popular', function (req, res) {
   mongo.getDB().collection('foods').find().sort({numLikes:-1}).limit(5).toArray(function(err, docs) {
     var foods = [];
     for (var i = 0; i < docs.length; i++) {
-      foods.push(docs[i]._id);
+      foods.push(parseFood(docs[i]));
     }
     res.json({
       foods: foods
@@ -171,7 +207,7 @@ app.get('/latest', function (req, res) {
   mongo.getDB().collection('foods').find().sort({_id:-1}).limit(5).toArray(function(err, docs) {
     var foods = [];
     for (var i = 0; i < docs.length; i++) {
-      foods.push(docs[i]._id);
+      foods.push(parseFood(docs[i]));
     }
     res.json({
       foods: foods

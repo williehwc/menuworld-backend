@@ -1,4 +1,4 @@
-module.exports = function (app, mongo, autoIncrement, sha1, generateToken) {
+module.exports = function (app, mongo, autoIncrement, sha1, generateToken, parseFood) {
   
   // Create user
   app.post('/users', function (req, res) {
@@ -41,9 +41,10 @@ module.exports = function (app, mongo, autoIncrement, sha1, generateToken) {
     }).toArray(function(err, docs) {
       var foods = [];
       for (var i = 0; i < docs.length; i++) {
-        foods.push(docs[i]._id);
+        foods.push(parseFood(docs[i]));
       }
       res.json({
+        userID: parseInt(req.params.uid),
         userName: req.userName,
         owner: req.owner,
         foods: foods
@@ -76,7 +77,12 @@ module.exports = function (app, mongo, autoIncrement, sha1, generateToken) {
         ownerUserID: parseInt(req.params.uid)
       }).toArray(function(err, docs) {
         for (var i = 0; i < docs.length; i++) {
-          menus.push(docs[i]._id);
+          menus.push({
+            menuID: docs[i]._id,
+            restaurantName: docs[i].restaurantName,
+            menuName: docs[i].menuName,
+            address: docs[i].address
+          });
         }
         res.json({
           email: req.email,

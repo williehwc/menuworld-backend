@@ -24,14 +24,6 @@ curl -X "POST" "http://localhost:3000/login" \
   "password": "asdf"
 }'
 
-read -p $'\nGet user\'s public details'
-curl "http://localhost:3000/users/1" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
-
-read -p $'\nGet user\'s private details'
-curl "http://localhost:3000/users/1/private" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
-
 read -p $'\nUpdate user'
 curl -X "PUT" "http://localhost:3000/users/1" \
      -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
@@ -51,10 +43,6 @@ curl -X "POST" "http://localhost:3000/menus" \
   "restaurantName": "Tim Hortons",
   "menuName": "Specials"
 }'
-
-read -p $'\nGet menu'
-curl "http://localhost:3000/menus/1" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
 
 read -p $'\nUpdate menu'
 curl -X "PUT" "http://localhost:3000/menus/1" \
@@ -77,14 +65,6 @@ curl -X "POST" "http://localhost:3000/foods" \
   "foodName": "Potato wedges"
 }'
 
-read -p $'\nGet food details'
-curl "http://localhost:3000/foods/1" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
-
-read -p $'\nGet and view food details'
-curl "http://localhost:3000/foods/1/view" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
-
 read -p $'\nModify food'
 curl -X "PUT" "http://localhost:3000/foods/1" \
      -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
@@ -105,25 +85,31 @@ curl -X "POST" "http://localhost:3000/foods/1/allergen" \
   "confirm": true
 }'
 
-read -p $'\nUn-report allergen'
-curl -X "DELETE" "http://localhost:3000/foods/1/allergen" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d $'{
-  "allergen": "peanuts"
-}'
-
 read -p $'\nLike food'
 curl -X "POST" "http://localhost:3000/foods/1/like" \
      -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
      -H "Content-Type: application/json; charset=utf-8" \
      -d $'{}'
 
-read -p $'\nUn-like food'
-curl -X "DELETE" "http://localhost:3000/foods/1/like" \
-     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d $'{}'
+read -p $'\nGet user\'s public details'
+curl "http://localhost:3000/users/1" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
+
+read -p $'\nGet user\'s private details'
+curl "http://localhost:3000/users/1/private" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
+
+read -p $'\nGet menu'
+curl "http://localhost:3000/menus/1" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
+
+read -p $'\nGet food details'
+curl "http://localhost:3000/foods/1" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
+
+read -p $'\nGet and view food details'
+curl "http://localhost:3000/foods/1/view" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es"
 
 read -p $'\nSearch peanut-free salad'
 curl "http://localhost:3000/search/salad/peanuts"
@@ -136,6 +122,20 @@ curl "http://localhost:3000/popular"
 
 read -p $'\nLatest foods'
 curl "http://localhost:3000/latest"
+
+read -p $'\nUn-report allergen'
+curl -X "DELETE" "http://localhost:3000/foods/1/allergen" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -d $'{
+  "allergen": "peanuts"
+}'
+
+read -p $'\nUn-like food'
+curl -X "DELETE" "http://localhost:3000/foods/1/like" \
+     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOjEsImV4cCI6MTU1MTc1ODg4MjEzMX0.u80jNQx75Q3bT0kvwwhuynRWO9-EqOVKyEjGSRom4es" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -d $'{}'
 
 read -p $'\nDelete food'
 curl -X "DELETE" "http://localhost:3000/foods/1" \

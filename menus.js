@@ -1,4 +1,4 @@
-module.exports = function (app, mongo, autoIncrement) {
+module.exports = function (app, mongo, autoIncrement, parseFood) {
   
   // Create menu
   app.post('/menus', function (req, res) {
@@ -43,9 +43,10 @@ module.exports = function (app, mongo, autoIncrement) {
     }).toArray(function(err, docs) {
       var foods = [];
       for (var i = 0; i < docs.length; i++) {
-        foods.push(docs[i]._id);
+        foods.push(parseFood(docs[i]));
       }
       res.json({
+        menuID: parseInt(req.params.mid),
         restaurantName: req.restaurantName,
         menuName: req.menuName,
         address: req.address,
